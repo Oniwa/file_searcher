@@ -1,4 +1,4 @@
-import os
+import os  # TODO: Upgrade to pathlib
 
 
 def main():
@@ -13,7 +13,9 @@ def main():
         print("We can't search for nothing.")
         return
 
-    search_folders(folder, text)
+    matches = search_folders(folder, text)
+    for m in matches:
+        print(m)
 
 
 def print_header():
@@ -35,11 +37,33 @@ def get_folder_from_user():
 
 def get_search_text_from_user():
     text = input("What are you searching for [single phrases only]? ")
-    return text
+    return text.lower()
 
 
 def search_folders(folder, text):
-    print(f'Would search {folder} for {text}')
+    all_matches = []
+
+    items = os.listdir(folder)
+
+    for item in items:
+        full_item = os.path.join(folder, item)
+        if os.path.isdir(full_item):
+            continue
+
+        matches = search_file(full_item, text)
+        all_matches.extend(matches)
+
+    return all_matches
+
+
+def search_file(filename, search_text):
+    matches = []
+    with open(filename, 'r', encoding='utf-8') as fin:
+        for line in fin:
+            if line.lower().find(search_text) >= 0:
+                matches.append(line)
+
+    return matches
 
 
 if __name__ == '__main__':
