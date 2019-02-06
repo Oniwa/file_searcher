@@ -1,5 +1,9 @@
 import os  # TODO: Upgrade to pathlib
+import collections
 
+
+SearchResult = collections.namedtuple('SearchResult',
+                                      'file, line, text')
 
 def main():
     print_header()
@@ -15,8 +19,12 @@ def main():
 
     matches = search_folders(folder, text)
     for m in matches:
-        print(m)
-
+        # print(m)
+        print('----------MATCH----------')
+        print(f'file: {m.file}')
+        print(f'line: {m.line}')
+        print(f'match: {m.text.strip()}')
+        print()
 
 def print_header():
     print('--------------------------------------')
@@ -59,9 +67,10 @@ def search_folders(folder, text):
 def search_file(filename, search_text):
     matches = []
     with open(filename, 'r', encoding='utf-8') as fin:
-        for line in fin:
+        for line_num, line in enumerate(fin):
             if line.lower().find(search_text) >= 0:
-                matches.append(line)
+                m = SearchResult(line=line_num, file=filename, text=line)
+                matches.append(m)
 
     return matches
 
