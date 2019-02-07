@@ -21,6 +21,7 @@ def fibonacci(limit):
 
     return nums
 
+
 print('via lists')
 for n in fibonacci(100):
     print(n, end=', ')
