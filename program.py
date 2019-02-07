@@ -1,9 +1,9 @@
 import os  # TODO: Upgrade to pathlib
 import collections
 
-
 SearchResult = collections.namedtuple('SearchResult',
                                       'file, line, text')
+
 
 def main():
     print_header()
@@ -18,13 +18,16 @@ def main():
         return
 
     matches = search_folders(folder, text)
+    match_count = 0
     for m in matches:
+        match_count += 1
         # print(m)
-        print('----------MATCH----------')
-        print(f'file: {m.file}')
-        print(f'line: {m.line}')
-        print(f'match: {m.text.strip()}')
-        print()
+        # print('----------MATCH----------')
+        # print(f'file: {m.file}')
+        # print(f'line: {m.line:,}')
+        # print(f'match: {m.text.strip()}')
+        # print()
+    print(f'Found {match_count:,} matches.')
 
 def print_header():
     print('--------------------------------------')
@@ -56,9 +59,10 @@ def search_folders(folder, text):
     for item in items:
         full_item = os.path.join(folder, item)
         if os.path.isdir(full_item):
-            continue
+            matches = search_folders(full_item, text)
+        else:
+            matches = search_file(full_item, text)
 
-        matches = search_file(full_item, text)
         all_matches.extend(matches)
 
     return all_matches
