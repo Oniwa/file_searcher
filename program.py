@@ -1,4 +1,4 @@
-import os  # TODO: Upgrade to pathlib
+from pathlib import Path
 import collections
 
 SearchResult = collections.namedtuple('SearchResult',
@@ -40,11 +40,13 @@ def get_folder_from_user():
     folder = input("What folder do you want to search? ")
     if not folder or not folder.strip():
         return None
+    else:
+        folder = Path(folder)
 
-    if not os.path.isdir(folder):
+    if not folder.is_dir():
         return None
 
-    return os.path.abspath(folder)
+    return folder.absolute()
 
 
 def get_search_text_from_user():
@@ -53,14 +55,13 @@ def get_search_text_from_user():
 
 
 def search_folders(folder, text):
-    items = os.listdir(folder)
+    items = Path(folder)
 
-    for item in items:
-        full_item = os.path.join(folder, item)
-        if os.path.isdir(full_item):
-            yield from search_folders(full_item, text)
+    for item in items.iterdir():
+        if item.is_dir():
+            yield from search_folders(item, text)
         else:
-            yield from search_file(full_item, text)
+            yield from search_file(item, text)
 
 
 def search_file(filename, search_text):
